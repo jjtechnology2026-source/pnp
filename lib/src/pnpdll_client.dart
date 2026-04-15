@@ -86,6 +86,8 @@ class PnpDllClient {
   PnpResponse pago(String data) => _call1('PFPago', data);
   PnpResponse devolucion(String linea, String monto) =>
       _call2('PFDevolucion', linea, monto);
+  PnpResponse notaCredito(String linea, String monto) =>
+      devolucion(linea, monto);
   PnpResponse cancelarDocumento(String linea, String monto) =>
       _call2('PFCancelaDoc', linea, monto);
   PnpResponse endoso(String texto) => _call1('PFendoso', texto);

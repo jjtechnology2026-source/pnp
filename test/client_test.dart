@@ -87,6 +87,20 @@ void main() {
       expect(result.report.totalSales, 1234.50);
     });
   });
+
+  group('PnpDllClient.notaCredito', () {
+    test('expone alias explicito sobre PFDevolucion', () {
+      final native = _FakeNativeExecutor(<String, String>{
+        'PFDevolucion|0001|1500': 'OK',
+      });
+
+      final client = PnpDllClient(native);
+      final response = client.notaCredito('0001', '1500');
+
+      expect(response.functionName, 'PFDevolucion');
+      expect(response.raw, 'OK');
+    });
+  });
 }
 
 class _FakeNativeExecutor implements NativeExecutor {

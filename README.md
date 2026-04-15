@@ -8,6 +8,7 @@ Paquete Dart para integrar la DLL pnpdll de impresoras fiscales PNP via FFI.
 - Cliente de alto nivel para emitir factura fiscal.
 - Deteccion de numero de factura al cerrar una factura.
 - Parser estructurado de reporte Z.
+- Alias `notaCredito(...)` sobre `PFDevolucion` para exponer la operacion con un nombre de dominio mas claro.
 - Tests unitarios para parser y flujo.
 
 ## Requisitos
