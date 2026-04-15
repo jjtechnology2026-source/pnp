@@ -1,0 +1,13 @@
+Este archivo zip contiene la ultima versión de
+la libreria dinamica para controlar las impresoras
+PNP desde windows.
+
+pnpdll.dll 		ultima version
+pnpdlltest.dll 	version de prueba simula la mayoria de los comandos
+testdllpnp.exe 	Promada para enviar comandos al dll y probar la impresora.
+
+Manual integracion DLL
+
+testdllpnpIGTF.exe este dll requiere se use la nueva version de dll donde se agrega el nuevo comando.
+
+Recuerde que por seguridad el dll muestra un mensaje de vencido para que sea actualizado y se mantengan los ultimos requisitos del seniat.
