@@ -6,6 +6,7 @@ Paquete Dart para integrar la DLL pnpdll de impresoras fiscales PNP via FFI.
 
 - Wrapper FFI para funciones exportadas de pnpdll.
 - Cliente de alto nivel para emitir factura fiscal.
+- Cliente de alto nivel para imprimir documento no fiscal de prueba.
 - Deteccion de numero de factura al cerrar una factura.
 - Parser estructurado de reporte Z.
 - Alias `notaCredito(...)` sobre `PFDevolucion` para exponer la operacion con un nombre de dominio mas claro.
@@ -55,6 +56,48 @@ void main() {
   }
 }
 ```
+
+## Documento no fiscal de prueba
+
+El cliente tambien expone un flujo estructurado para abrir, imprimir y cerrar un documento no fiscal:
+
+```dart
+import 'package:pnpdll_dart/pnpdll_dart.dart';
+
+void main() {
+  final client = PnpDllClient.ffi(
+    dllPath: r'C:\ruta\a\pnpdll64.dll',
+  );
+
+  try {
+    final result = client.emitirDocumentoNoFiscal(
+      const NonFiscalDocumentRequest(
+        port: '13',
+        customerName: 'CLIENTE DEMO',
+        customerRif: 'J123456789',
+        lines: <NonFiscalLine>[
+          NonFiscalLine(description: 'DOCUMENTO NO FISCAL'),
+          NonFiscalLine(description: 'LINEA 2'),
+        ],
+      ),
+    );
+
+    print(result.toJson());
+  } finally {
+    client.close();
+  }
+}
+```
+
+`emitirDocumentoNoFiscal(...)` e `imprimirDocumentoNoFiscal(...)` son aliases equivalentes para mantener una firma publica consistente con las otras implementaciones del workspace.
+
+Si prefieres ver un ejemplo separado, puedes ejecutar:
+
+```powershell
+dart run example/non_fiscal_example.dart
+```
+
+La matriz sugerida para validacion real de hardware esta en `MATRIZ_PRUEBAS_DOCUMENTO_NO_FISCAL.md` en la raiz del workspace.
 
 ## Verificacion de numero de factura
 

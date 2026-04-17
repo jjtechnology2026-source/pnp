@@ -88,6 +88,62 @@ void main() {
     });
   });
 
+  group('PnpDllClient.imprimirDocumentoNoFiscal', () {
+    test('abre, imprime lineas y cierra el documento', () {
+      final native = _FakeNativeExecutor(<String, String>{
+        'PFabrepuerto|13': 'OK',
+        'PFAbreNF|CLIENTE DEMO|J123456789': 'OK',
+        'PFLineaNF|DOCUMENTO NO FISCAL|1|0|0': 'OK',
+        'PFLineaNF|LINEA 2|1|0|0': 'OK',
+        'PFCierraNF': 'OK',
+        'PFcierrapuerto': 'OK',
+      });
+
+      final client = PnpDllClient(native);
+      final result = client.imprimirDocumentoNoFiscal(
+        const NonFiscalDocumentRequest(
+          port: '13',
+          customerName: 'CLIENTE DEMO',
+          customerRif: 'J123456789',
+          lines: <NonFiscalLine>[
+            NonFiscalLine(description: 'DOCUMENTO NO FISCAL'),
+            NonFiscalLine(description: 'LINEA 2'),
+          ],
+        ),
+      );
+
+      expect(result.ok, isTrue);
+      expect(result.processedLines, 2);
+      expect(result.responses['PFCierraNF']?.raw, 'OK');
+      expect(result.responses['PFcierrapuerto']?.raw, 'OK');
+    });
+
+    test('expone alias emitirDocumentoNoFiscal', () {
+      final native = _FakeNativeExecutor(<String, String>{
+        'PFabrepuerto|13': 'OK',
+        'PFAbreNF|CLIENTE DEMO|J123456789': 'OK',
+        'PFLineaNF|DOCUMENTO NO FISCAL|1|0|0': 'OK',
+        'PFCierraNF': 'OK',
+        'PFcierrapuerto': 'OK',
+      });
+
+      final client = PnpDllClient(native);
+      final result = client.emitirDocumentoNoFiscal(
+        const NonFiscalDocumentRequest(
+          port: '13',
+          customerName: 'CLIENTE DEMO',
+          customerRif: 'J123456789',
+          lines: <NonFiscalLine>[
+            NonFiscalLine(description: 'DOCUMENTO NO FISCAL'),
+          ],
+        ),
+      );
+
+      expect(result.ok, isTrue);
+      expect(result.lineasProcesadas, 1);
+    });
+  });
+
   group('PnpDllClient.notaCredito', () {
     test('expone alias explicito sobre PFDevolucion', () {
       final native = _FakeNativeExecutor(<String, String>{

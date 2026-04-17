@@ -56,6 +56,29 @@ class InvoiceLine {
   }
 }
 
+class NonFiscalLine {
+  const NonFiscalLine({
+    required this.description,
+    this.quantity = '1',
+    this.amount = '0',
+    this.tax = '0',
+  });
+
+  final String description;
+  final String quantity;
+  final String amount;
+  final String tax;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'description': description,
+      'quantity': quantity,
+      'amount': amount,
+      'tax': tax,
+    };
+  }
+}
+
 class InvoiceRequest {
   const InvoiceRequest({
     required this.port,
@@ -116,6 +139,55 @@ class InvoiceResult {
       'invoiceNumberProbes':
           invoiceNumberProbes.map((e) => e.toJson()).toList(growable: false),
       'warnings': warnings,
+    };
+  }
+}
+
+class NonFiscalDocumentRequest {
+  const NonFiscalDocumentRequest({
+    required this.port,
+    required this.customerName,
+    required this.customerRif,
+    required this.lines,
+  });
+
+  final String port;
+  final String customerName;
+  final String customerRif;
+  final List<NonFiscalLine> lines;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'port': port,
+      'customerName': customerName,
+      'customerRif': customerRif,
+      'lines': lines.map((e) => e.toJson()).toList(growable: false),
+    };
+  }
+}
+
+class NonFiscalDocumentResult {
+  const NonFiscalDocumentResult({
+    required this.responses,
+    required this.warnings,
+    required this.processedLines,
+  });
+
+  final Map<String, PnpResponse> responses;
+  final List<String> warnings;
+  final int processedLines;
+
+  int get lineasProcesadas => processedLines;
+
+  bool get ok => warnings.isEmpty;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'responses': responses.map(
+        (key, value) => MapEntry<String, dynamic>(key, value.toJson()),
+      ),
+      'warnings': warnings,
+      'processedLines': processedLines,
     };
   }
 }

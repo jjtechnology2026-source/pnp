@@ -169,6 +169,74 @@ class PnpDllClient {
     );
   }
 
+  NonFiscalDocumentResult imprimirDocumentoNoFiscal(
+    NonFiscalDocumentRequest request,
+  ) {
+    final responses = <String, PnpResponse>{};
+    final warnings = <String>[];
+    var processedLines = 0;
+
+    responses['PFabrepuerto'] = abrirPuerto(request.port);
+    if (_isHardError(responses['PFabrepuerto']!)) {
+      warnings.add('No fue posible abrir el puerto.');
+      return NonFiscalDocumentResult(
+        responses: responses,
+        warnings: warnings,
+        processedLines: processedLines,
+      );
+    }
+
+    try {
+      responses['PFAbreNF'] =
+          abrirNotaNoFiscal(request.customerName, request.customerRif);
+      if (_isHardError(responses['PFAbreNF']!)) {
+        warnings.add('No fue posible abrir el documento no fiscal.');
+        return NonFiscalDocumentResult(
+          responses: responses,
+          warnings: warnings,
+          processedLines: processedLines,
+        );
+      }
+
+      for (var i = 0; i < request.lines.length; i++) {
+        final line = request.lines[i];
+        responses['PFLineaNF[$i]'] = lineaNotaNoFiscal(
+          line.description,
+          line.quantity,
+          line.amount,
+          line.tax,
+        );
+        if (_isHardError(responses['PFLineaNF[$i]']!)) {
+          warnings.add('Error agregando linea no fiscal $i.');
+          return NonFiscalDocumentResult(
+            responses: responses,
+            warnings: warnings,
+            processedLines: processedLines,
+          );
+        }
+        processedLines++;
+      }
+
+      responses['PFCierraNF'] = cerrarNotaNoFiscal();
+      if (_isHardError(responses['PFCierraNF']!)) {
+        warnings.add('No fue posible cerrar el documento no fiscal.');
+      }
+
+      return NonFiscalDocumentResult(
+        responses: responses,
+        warnings: warnings,
+        processedLines: processedLines,
+      );
+    } finally {
+      responses['PFcierrapuerto'] = cerrarPuerto();
+    }
+  }
+
+  NonFiscalDocumentResult emitirDocumentoNoFiscal(
+    NonFiscalDocumentRequest request,
+  ) =>
+      imprimirDocumentoNoFiscal(request);
+
   ZReportResult obtenerReporteZEstructurado({
     List<String> payloadProbeCommands = const <String>['9|X'],
   }) {
